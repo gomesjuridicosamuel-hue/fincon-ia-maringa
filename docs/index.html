@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINCON-IA Maringá — Modo Demo</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sidebar-w:228px;
+  --header-h:52px;
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-d:#0C447C;
+  --teal:#0F6E56;--teal-l:#E1F5EE;
+  --purple:#534AB7;--purple-l:#EEEDFE;
+  --amber:#BA7517;--amber-l:#FAEEDA;
+  --green:#3B6D11;--green-l:#EAF3DE;
+  --red:#A32D2D;--red-l:#FCEBEB;
+  --gray:#5F5E5A;--gray-l:#F1EFE8;
+  --orange:#993C1D;--orange-l:#FAECE7;
+  --text:#1a1a1a;--text2:#555;--text3:#888;
+  --bg:#f5f4f0;--bg2:#ffffff;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0C447C 0%,#185FA5 50%,#0F6E56 100%)}
+.login-card{background:#fff;border-radius:16px;padding:40px 48px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.login-logo{font-size:22px;font-weight:700;color:var(--blue-d);margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:28px}
+.login-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block}
+.login-input{width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;outline:none;transition:border .2s}
+.login-input:focus{border-color:var(--blue)}
+.login-btn{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:background .2s}
+.login-btn:hover{background:var(--blue-d)}
+.login-hint{font-size:11px;color:var(--text3);margin-top:16px;text-align:center}
+.login-error{background:#FCEBEB;color:#A32D2D;font-size:12px;padding:8px 12px;border-radius:var(--radius);margin-top:12px;display:none}
+
+/* ── LAYOUT ── */
+#main-app{display:none;min-height:100vh}
+#sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:#0f172a;color:#fff;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+#page-wrapper{margin-left:var(--sidebar-w);padding-top:var(--header-h);min-height:100vh}
+#top-header{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:99}
+#page-content{padding:24px;min-height:calc(100vh - var(--header-h))}
+
+/* ── SIDEBAR ── */
+.sb-brand{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sb-title{font-size:16px;font-weight:700;color:#fff}
+.sb-subtitle{font-size:11px;color:#94a3b8;margin-top:2px}
+.sb-nav{flex:1;padding:12px 10px}
+.sb-section{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;padding:12px 10px 4px}
+.sb-link{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:13px;color:#94a3b8;cursor:pointer;transition:all .15s;margin:1px 0}
+.sb-link:hover{background:rgba(255,255,255,0.06);color:#e2e8f0}
+.sb-link.active{background:#1e40af;color:#fff}
+.sb-icon{width:16px;height:16px;flex-shrink:0}
+.sb-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,0.08)}
+.sb-user-name{font-size:13px;font-weight:600;color:#e2e8f0}
+.sb-user-role{font-size:11px;color:#64748b}
+.sb-logout{font-size:11px;color:#64748b;cursor:pointer;margin-top:6px;display:inline-flex;align-items:center;gap:4px}
+.sb-logout:hover{color:#94a3b8}
+
+/* ── HEADER ── */
+.hdr-title{font-size:15px;font-weight:600;color:var(--text)}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.hdr-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.hdr-badge.info{background:var(--blue-l);color:var(--blue-d)}
+.hdr-badge.warn{background:var(--amber-l);color:var(--amber)}
+.hdr-badge.danger{background:var(--red-l);color:var(--red)}
+.hdr-badge.ok{background:var(--green-l);color:var(--green)}
+
+/* ── COMPONENTS ── */
+.page{display:none}
+.page.active{display:block}
+.page-title{font-size:20px;font-weight:600;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.card{background:#fff;border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:14px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px}
+.kpi-label{font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.kpi-value{font-size:26px;font-weight:700;line-height:1}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.badge.verde   {background:var(--green-l);color:var(--green)}
+.badge.amarelo {background:var(--amber-l);color:var(--amber)}
+.badge.laranja {background:var(--orange-l);color:var(--orange)}
+.badge.vermelho{background:var(--red-l);color:var(--red)}
+.badge.azul    {background:var(--blue-l);color:var(--blue-d)}
+.badge.roxo    {background:var(--purple-l);color:var(--purple)}
+.badge.cinza   {background:var(--gray-l);color:var(--gray)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:600;color:var(--text3);padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+td{padding:10px 12px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf8}
+.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover{background:var(--blue-d);border-color:var(--blue-d)}
+.btn-outline{background:#fff;color:var(--text2);border-color:var(--border2)}
+.btn-outline:hover{background:var(--bg);color:var(--text)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-green{background:var(--green-l);color:var(--green);border-color:var(--green)}
+.btn-red{background:var(--red-l);color:var(--red);border-color:var(--red)}
+.btn-amber{background:var(--amber-l);color:var(--amber);border-color:var(--amber)}
+.filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text2);transition:all .15s}
+.filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;outline:none;width:100%;transition:border .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
+.form-group{margin-bottom:0}
+.progress-bar{background:#e5e7eb;border-radius:4px;height:8px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;border-radius:4px;transition:width .4s}
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-box{width:20px;height:20px;border:2px solid var(--border2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.check-box.checked{background:var(--green);border-color:var(--green);color:#fff}
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab{padding:10px 20px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab:hover{color:var(--text)}
+.disclaimer{background:#FEF3C7;border:1px solid #F59E0B;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:16px}
+.watermark-banner{background:#FAEEDA;border:2px solid #EF9F27;border-radius:var(--radius);padding:12px 16px;font-size:12px;font-weight:700;color:#633806;text-align:center;margin-bottom:16px;letter-spacing:0.05em}
+.chat-wrap{display:flex;flex-direction:column;height:420px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:#f9fafb}
+.chat-msg{max-width:75%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5}
+.chat-msg.user{align-self:flex-end;background:var(--blue);color:#fff;border-radius:12px 12px 2px 12px}
+.chat-msg.bot{align-self:flex-start;background:#fff;border:1px solid var(--border);border-radius:12px 12px 12px 2px}
+.chat-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);background:#fff}
+.chat-input{flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:20px;font-size:13px;outline:none}
+.chat-input:focus{border-color:var(--blue)}
+.lrf-bar-wrap{position:relative;height:28px;border-radius:6px;overflow:hidden;margin:8px 0;background:#e5e7eb}
+.lrf-segment{position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;transition:width .5s}
+.lrf-pointer{position:absolute;top:0;width:3px;height:100%;background:#1a1a1a;transition:left .5s}
+.lrf-result{font-size:28px;font-weight:700;margin:8px 0}
+.stat-disclaimer{font-size:10px;color:var(--text3);font-style:italic;margin-top:4px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius-lg);padding:28px;width:480px;max-width:95vw;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.sb-demo-banner{margin:10px;background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.3);border-radius:6px;padding:6px 10px;font-size:10px;color:#d97706;text-align:center}
+.sb-demo-banner strong{display:block;font-size:11px}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:#fafaf8}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-l)}
+.upload-icon{font-size:32px;margin-bottom:8px}
+.upload-text{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.upload-sub{font-size:12px;color:var(--text3)}
+.concil-row{display:grid;grid-template-columns:1fr 40px 1fr;gap:8px;align-items:center;padding:8px;border-bottom:0.5px solid var(--border)}
+.concil-row:last-child{border-bottom:none}
+.concil-item{background:var(--bg);border-radius:var(--radius);padding:8px 12px;font-size:12px}
+.concil-status{text-align:center;font-size:14px}
+.timeline{display:flex;gap:0;margin-bottom:20px;border-radius:var(--radius-lg);overflow:hidden;border:0.5px solid var(--border)}
+.timeline-step{flex:1;padding:14px 12px;text-align:center;border-right:0.5px solid var(--border);position:relative}
+.timeline-step:last-child{border-right:none}
+.timeline-step.done{background:var(--green-l)}
+.timeline-step.active{background:var(--blue-l)}
+.timeline-step .ts-num{font-size:10px;font-weight:700;color:var(--text3)}
+.timeline-step .ts-name{font-size:11px;font-weight:600;margin-top:2px}
+.timeline-step.done .ts-name{color:var(--green)}
+.timeline-step.active .ts-name{color:var(--blue-d)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">FINCON-IA</div>
+    <div class="login-sub">Prefeitura de Maringá — Contabilidade Pública</div>
+    <div style="margin-bottom:14px">
+      <label class="login-label">E-mail</label>
+      <input class="login-input" id="li-email" type="email" value="admin@maringa.pr.gov.br" placeholder="seu@email.com">
+    </div>
+    <div>
+      <label class="login-label">Senha</label>
+      <input class="login-input" id="li-pass" type="password" value="Admin@2026!" placeholder="••••••••">
+    </div>
+    <div class="login-error" id="login-error">Credenciais inválidas. Tente novamente.</div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-hint">Demo: admin@maringa.pr.gov.br / Admin@2026!</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════════════════════ -->
+<div id="main-app">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-title">FINCON-IA</div>
+      <div class="sb-subtitle">Maringá — Contabilidade Pública</div>
+    </div>
+    <div class="sb-demo-banner"><strong>MODO DEMO</strong>dados simulados</div>
+    <nav class="sb-nav">
+      <div class="sb-link active" onclick="goto('dashboard')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+        Dashboard
+      </div>
+      <div class="sb-link" onclick="goto('competencias')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/></svg>
+        Competências
+      </div>
+      <div class="sb-section">Monitoramento</div>
+      <div class="sb-link" onclick="goto('alertas')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2"/></svg>
+        Alertas <span class="badge vermelho" style="margin-left:auto;font-size:10px;padding:2px 6px" id="sb-alert-count">3</span>
+      </div>
+      <div class="sb-section">Operação</div>
+      <div class="sb-link" onclick="goto('importacao')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke-width="2"/><polyline points="17 8 12 3 7 8" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="15" stroke-width="2"/></svg>
+        Importação
+      </div>
+      <div class="sb-link" onclick="goto('conciliacao')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23" stroke-width="2"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-width="2"/></svg>
+        Conciliação
+      </div>
+      <div class="sb-link" onclick="goto('pendencias')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-width="2"/></svg>
+        Pendências
+      </div>
+      <div class="sb-link" onclick="goto('obrigacoes')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4" stroke-width="2"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-width="2"/></svg>
+        Obrigações
+      </div>
+      <div class="sb-link" onclick="goto('pre-fechamento')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="2"/><polyline points="14 2 14 8 20 8" stroke-width="2"/></svg>
+        Pré-Fechamento
+      </div>
+      <div class="sb-section">Análise</div>
+      <div class="sb-link" onclick="goto('relatorios')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10" stroke-width="2"/><line x1="12" y1="20" x2="12" y2="4" stroke-width="2"/><line x1="6" y1="20" x2="6" y2="14" stroke-width="2"/></svg>
+        Relatórios
+      </div>
+      <div class="sb-link" onclick="goto('auditoria')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-width="2"/></svg>
+        Auditoria
+      </div>
+      <div class="sb-section">Gestão</div>
+      <div class="sb-link" onclick="goto('documentos')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" stroke-width="2"/></svg>
+        Documentos
+      </div>
+      <div class="sb-link" onclick="goto('relatorios-lrf')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="2"/><line x1="8" y1="13" x2="16" y2="13" stroke-width="2"/><line x1="8" y1="17" x2="16" y2="17" stroke-width="2"/></svg>
+        RREO / RGF
+      </div>
+      <div class="sb-link" onclick="goto('calculadora')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" stroke-width="2"/><line x1="8" y1="6" x2="16" y2="6" stroke-width="2"/><line x1="8" y1="10" x2="10" y2="10" stroke-width="2"/><line x1="14" y1="10" x2="16" y2="10" stroke-width="2"/><line x1="8" y1="14" x2="10" y2="14" stroke-width="2"/><line x1="14" y1="14" x2="16" y2="14" stroke-width="2"/><line x1="8" y1="18" x2="10" y2="18" stroke-width="2"/></svg>
+        Calculadora LRF
+      </div>
+      <div class="sb-section">IA</div>
+      <div class="sb-link" onclick="goto('copiloto')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="2"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke-width="2"/></svg>
+        Copiloto IA
+      </div>
+      <div class="sb-section">Admin</div>
+      <div class="sb-link" onclick="goto('configuracoes')">
+        <svg class="sb-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-width="2"/></svg>
+        Configurações
+      </div>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user-name" id="sb-name">Dr. Admin</div>
+      <div class="sb-user-role" id="sb-role">ADMIN — Maringá/PR</div>
+      <div class="sb-logout" onclick="doLogout()">↪ Sair</div>
+    </div>
+  </aside>
+
+  <!-- TOP HEADER -->
+  <header id="top-header">
+    <div class="hdr-title" id="hdr-title">Dashboard</div>
+    <div class="hdr-right">
+      <span class="hdr-badge warn">Competência: Mai/2026</span>
+      <span class="hdr-badge info" id="hdr-lrf-badge">Pessoal: 49,2% — AVISO</span>
+      <span class="hdr-badge ok">Sistema ativo</span>
+    </div>
+  </header>
+
+  <div id="page-wrapper">
+    <div id="page-content">
+
+      <!-- ══ DASHBOARD ══ -->
+      <div id="pg-dashboard" class="page active">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Visão geral — Competência Maio/2026 — Maringá/PR</div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-label">Receita Corrente Líquida</div><div class="kpi-value" style="color:var(--blue-d)">R$ 1,82B</div><div class="kpi-sub">↑ 3,1% vs abr/2026</div></div>
+          <div class="kpi"><div class="kpi-label">Gastos com Pessoal</div><div class="kpi-value" style="color:var(--amber)">49,2%</div><div class="kpi-sub">Limite: 54% — AVISO</div></div>
+          <div class="kpi"><div class="kpi-label">Resultado Primário</div><div class="kpi-value" style="color:var(--green)">+R$ 42M</div><div class="kpi-sub">Superávit acumulado</div></div>
+          <div class="kpi"><div class="kpi-label">Alertas ativos</div><div class="kpi-value" style="color:var(--red)">3</div><div class="kpi-sub">1 crítico · 2 avisos</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-title">Evolução da RCL (2026)</div>
+            <div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+                <div style="background:var(--blue);width:100%;border-radius:3px 3px 0 0" title="Jan: R$1,71B" class="bar-hover" data-h="94"></div>
+                <span style="font-size:10px;color:var(--text3)">Jan</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+                <div style="background:var(--blue);width:100%;border-radius:3px 3px 0 0" data-h="91"></div>
+                <span style="font-size:10px;color:var(--text3)">Fev</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+                <div style="background:var(--blue);width:100%;border-radius:3px 3px 0 0" data-h="97"></div>
+                <span style="font-size:10px;color:var(--text3)">Mar</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+                <div style="background:var(--blue);width:100%;border-radius:3px 3px 0 0" data-h="95"></div>
+                <span style="font-size:10px;color:var(--text3)">Abr</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+                <div style="background:var(--blue-d);width:100%;border-radius:3px 3px 0 0" data-h="100"></div>
+                <span style="font-size:10px;color:var(--blue-d);font-weight:700">Mai</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+                <div style="background:var(--gray-l);width:100%;border-radius:3px 3px 0 0;border:1px dashed var(--border)" data-h="98"></div>
+                <span style="font-size:10px;color:var(--text3)">Jun</span>
+              </div>
+            </div>
+            <div id="rcl-bars" style="display:none"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Indicadores LRF — Mai/2026</div>
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Gastos Pessoal</span><span style="font-weight:700;color:var(--amber)">49,2%</span></div>
+              <div class="lrf-bar-wrap">
+                <div class="lrf-segment" style="left:0;width:47%;background:#3B6D11">47%</div>
+                <div class="lrf-segment" style="left:47%;width:4.3%;background:#BA7517"></div>
+                <div class="lrf-segment" style="left:51.3%;width:2.7%;background:#993C1D"></div>
+                <div class="lrf-segment" style="left:54%;width:46%;background:#e5e7eb"></div>
+                <div class="lrf-pointer" style="left:calc(49.2% - 1px)"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:2px"><span>0%</span><span>47%</span><span>54%</span><span>100%</span></div>
+            </div>
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Dívida Consolidada</span><span style="font-weight:700;color:var(--green)">48,1%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:48.1%;background:var(--green)"></div></div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">Limite: 120% da RCL</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Operações de Crédito</span><span style="font-weight:700;color:var(--green)">6,3%</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:18%;background:var(--green)"></div></div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">Limite: 35% da RCL</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Últimos alertas</div>
+          <table>
+            <thead><tr><th>Tipo</th><th>Descrição</th><th>Prioridade</th><th>Status</th><th>Data</th></tr></thead>
+            <tbody>
+              <tr><td>LRF Pessoal</td><td>Gastos com pessoal atingiram 49,2% da RCL — zona de aviso</td><td><span class="badge amarelo">AVISO</span></td><td><span class="badge vermelho">ATIVO</span></td><td>02/05/2026</td></tr>
+              <tr><td>Obrigação Vencendo</td><td>SIOPS — Informações de Saúde vence em 5 dias</td><td><span class="badge amarelo">AVISO</span></td><td><span class="badge vermelho">ATIVO</span></td><td>01/05/2026</td></tr>
+              <tr><td>Pendência Crítica</td><td>Balancete de verificação abr/2026 pendente de conferência</td><td><span class="badge vermelho">CRÍTICO</span></td><td><span class="badge vermelho">ATIVO</span></td><td>30/04/2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ COMPETÊNCIAS ══ -->
+      <div id="pg-competencias" class="page">
+        <div class="page-title">Competências</div>
+        <div class="page-sub">Gestão das competências contábeis mensais</div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Competência</th><th>Exercício</th><th>Status</th><th>Abertura</th><th>Fechamento</th><th>Responsável</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><strong>Mai/2026</strong></td><td>2026</td><td><span class="badge azul">ABERTA</span></td><td>01/05/2026</td><td>—</td><td>Maria Silva</td><td><button class="btn btn-outline btn-sm">Ver</button></td></tr>
+              <tr><td>Abr/2026</td><td>2026</td><td><span class="badge verde">FECHADA</span></td><td>01/04/2026</td><td>30/04/2026</td><td>Maria Silva</td><td><button class="btn btn-outline btn-sm">Ver</button></td></tr>
+              <tr><td>Mar/2026</td><td>2026</td><td><span class="badge verde">FECHADA</span></td><td>01/03/2026</td><td>31/03/2026</td><td>João Costa</td><td><button class="btn btn-outline btn-sm">Ver</button></td></tr>
+              <tr><td>Fev/2026</td><td>2026</td><td><span class="badge verde">FECHADA</span></td><td>01/02/2026</td><td>28/02/2026</td><td>João Costa</td><td><button class="btn btn-outline btn-sm">Ver</button></td></tr>
+              <tr><td>Jan/2026</td><td>2026</td><td><span class="badge verde">FECHADA</span></td><td>01/01/2026</td><td>31/01/2026</td><td>Ana Pereira</td><td><button class="btn btn-outline btn-sm">Ver</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ ALERTAS ══ -->
+      <div id="pg-alertas" class="page">
+        <div class="page-title">Alertas LRF</div>
+        <div class="page-sub">Monitoramento automático de conformidade — engine de deduplicação SHA-256</div>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterAlerts(this,'all')">Todos (5)</button>
+          <button class="filter-btn" onclick="filterAlerts(this,'ATIVO')">Ativos (3)</button>
+          <button class="filter-btn" onclick="filterAlerts(this,'CRÍTICO')">Críticos (1)</button>
+          <button class="filter-btn" onclick="filterAlerts(this,'RECONHECIDO')">Reconhecidos (2)</button>
+        </div>
+        <div class="card" style="padding:0">
+          <table id="alerts-table">
+            <thead><tr><th>Tipo</th><th>Descrição</th><th>Prioridade</th><th>Status</th><th>Município</th><th>Data</th><th></th></tr></thead>
+            <tbody>
+              <tr data-status="ATIVO" data-prio="AVISO"><td>LRF Pessoal</td><td>Gastos com pessoal em 49,2% da RCL — acima de 47%</td><td><span class="badge amarelo">AVISO</span></td><td><span class="badge vermelho">ATIVO</span></td><td>Maringá</td><td>02/05/2026</td><td><button class="btn btn-outline btn-sm" onclick="reconhecerAlerta(this)">Reconhecer</button></td></tr>
+              <tr data-status="ATIVO" data-prio="AVISO"><td>Obrigação Vencendo</td><td>SIOPS vence em 5 dias úteis — prazo: 07/05/2026</td><td><span class="badge amarelo">AVISO</span></td><td><span class="badge vermelho">ATIVO</span></td><td>Maringá</td><td>01/05/2026</td><td><button class="btn btn-outline btn-sm" onclick="reconhecerAlerta(this)">Reconhecer</button></td></tr>
+              <tr data-status="ATIVO" data-prio="CRÍTICO"><td>Pendência Crítica</td><td>Balancete abr/2026 sem conferência — 2 dias de atraso</td><td><span class="badge vermelho">CRÍTICO</span></td><td><span class="badge vermelho">ATIVO</span></td><td>Maringá</td><td>30/04/2026</td><td><button class="btn btn-outline btn-sm" onclick="reconhecerAlerta(this)">Reconhecer</button></td></tr>
+              <tr data-status="RECONHECIDO" data-prio="AVISO"><td>Conciliação</td><td>Divergência de R$ 4.320,00 no extrato Banco do Brasil</td><td><span class="badge amarelo">AVISO</span></td><td><span class="badge cinza">RECONHECIDO</span></td><td>Maringá</td><td>28/04/2026</td><td><span style="font-size:11px;color:var(--text3)">João Costa</span></td></tr>
+              <tr data-status="RECONHECIDO" data-prio="INFO"><td>Sistema</td><td>Backup automático concluído — 3.241 registros</td><td><span class="badge azul">INFO</span></td><td><span class="badge cinza">RECONHECIDO</span></td><td>Maringá</td><td>27/04/2026</td><td><span style="font-size:11px;color:var(--text3)">Sistema</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ IMPORTAÇÃO ══ -->
+      <div id="pg-importacao" class="page">
+        <div class="page-title">Importação</div>
+        <div class="page-sub">Upload de balancetes, extratos e arquivos contábeis</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <div class="card">
+              <div class="card-title">Novo upload</div>
+              <div style="margin-bottom:12px">
+                <label class="form-label">Tipo de importação</label>
+                <select><option>Balancete Contábil (CSV)</option><option>Extrato Bancário (OFX)</option><option>Folha de Pessoal (CSV)</option></select>
+              </div>
+              <div class="upload-zone" onclick="simUpload()" id="upload-zone">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Clique ou arraste o arquivo</div>
+                <div class="upload-sub">CSV, OFX, TXT até 50 MB</div>
+              </div>
+              <div id="upload-progress" style="display:none;margin-top:12px">
+                <div style="font-size:12px;color:var(--text2);margin-bottom:6px" id="upload-status">Processando...</div>
+                <div class="progress-bar"><div class="progress-fill" id="upload-bar" style="width:0%;background:var(--blue)"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Histórico de importações</div>
+            <table>
+              <thead><tr><th>Arquivo</th><th>Tipo</th><th>Status</th><th>Registros</th></tr></thead>
+              <tbody>
+                <tr><td>balancete_abr2026.csv</td><td>Contábil</td><td><span class="badge verde">OK</span></td><td>4.812</td></tr>
+                <tr><td>extrato_BB_abr.ofx</td><td>Bancário</td><td><span class="badge verde">OK</span></td><td>312</td></tr>
+                <tr><td>folha_abr2026.csv</td><td>Pessoal</td><td><span class="badge verde">OK</span></td><td>2.140</td></tr>
+                <tr><td>balancete_mar2026.csv</td><td>Contábil</td><td><span class="badge amarelo">1 erro</span></td><td>4.601</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ CONCILIAÇÃO ══ -->
+      <div id="pg-conciliacao" class="page">
+        <div class="page-title">Conciliação Bancária</div>
+        <div class="page-sub">Confronto entre registros contábeis e extratos bancários</div>
+        <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi"><div class="kpi-label">Conciliados</div><div class="kpi-value" style="color:var(--green)">298</div></div>
+          <div class="kpi"><div class="kpi-label">Divergências</div><div class="kpi-value" style="color:var(--red)">4</div></div>
+          <div class="kpi"><div class="kpi-label">Valor divergente</div><div class="kpi-value" style="color:var(--red);font-size:18px">R$28.430</div></div>
+          <div class="kpi"><div class="kpi-label">Taxa de conciliação</div><div class="kpi-value" style="color:var(--green)">98,7%</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Divergências pendentes</div>
+          <div id="concil-items">
+            <div class="concil-row" style="background:var(--bg);border-radius:8px;margin-bottom:6px">
+              <div style="font-size:11px;font-weight:600;color:var(--text3)">CONTÁBIL</div>
+              <div></div>
+              <div style="font-size:11px;font-weight:600;color:var(--text3)">EXTRATO</div>
+            </div>
+            <div class="concil-row">
+              <div class="concil-item"><div style="font-size:11px;color:var(--text3)">Empenho 2026/1823</div><div style="font-weight:600">R$ 12.450,00</div><div style="font-size:11px;color:var(--text3)">28/04/2026</div></div>
+              <div class="concil-status" style="color:var(--red)">≠</div>
+              <div class="concil-item"><div style="font-size:11px;color:var(--text3)">DOC 00428</div><div style="font-weight:600">R$ 12.450,00</div><div style="font-size:11px;color:var(--text3)">29/04/2026 ⚠</div></div>
+            </div>
+            <div class="concil-row">
+              <div class="concil-item"><div style="font-size:11px;color:var(--text3)">Empenho 2026/1791</div><div style="font-weight:600">R$ 8.200,00</div><div style="font-size:11px;color:var(--text3)">25/04/2026</div></div>
+              <div class="concil-status" style="color:var(--red)">≠</div>
+              <div class="concil-item"><div style="font-size:11px;color:var(--text3)">Não localizado</div><div style="font-weight:600;color:var(--red)">— ausente —</div><div style="font-size:11px;color:var(--text3)">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PENDÊNCIAS ══ -->
+      <div id="pg-pendencias" class="page">
+        <div class="page-title">Pendências</div>
+        <div class="page-sub">Fila de pendências contábeis e financeiras</div>
+        <div class="filter-row">
+          <button class="filter-btn active">Todas (8)</button>
+          <button class="filter-btn">Críticas (2)</button>
+          <button class="filter-btn">Alta (3)</button>
+          <button class="filter-btn">Normal (3)</button>
+        </div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead><tr><th>Descrição</th><th>Tipo</th><th>Prioridade</th><th>Status</th><th>Responsável</th><th>Vencimento</th></tr></thead>
+            <tbody>
+              <tr><td>Conferência balancete abr/2026</td><td>Contábil</td><td><span class="badge vermelho">CRÍTICA</span></td><td><span class="badge amarelo">PENDENTE</span></td><td>Maria Silva</td><td><span style="color:var(--red)">30/04/2026 ⚠</span></td></tr>
+              <tr><td>Envio SIOPS quadrimestral</td><td>Obrigação</td><td><span class="badge vermelho">CRÍTICA</span></td><td><span class="badge amarelo">PENDENTE</span></td><td>Ana Pereira</td><td><span style="color:var(--red)">07/05/2026</span></td></tr>
+              <tr><td>Conciliação extratos Caixa Econômica</td><td>Bancário</td><td><span class="badge laranja">ALTA</span></td><td><span class="badge amarelo">PENDENTE</span></td><td>João Costa</td><td>09/05/2026</td></tr>
+              <tr><td>Revisão empenhos remanescentes</td><td>Contábil</td><td><span class="badge laranja">ALTA</span></td><td><span class="badge azul">EM ANDAMENTO</span></td><td>Maria Silva</td><td>12/05/2026</td></tr>
+              <tr><td>Atualização cadastro fornecedores</td><td>Cadastral</td><td><span class="badge azul">NORMAL</span></td><td><span class="badge cinza">AGUARDANDO</span></td><td>—</td><td>15/05/2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ OBRIGAÇÕES ══ -->
+      <div id="pg-obrigacoes" class="page">
+        <div class="page-title">Obrigações Legais</div>
+        <div class="page-sub">Agenda de obrigações com countdown automático</div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead><tr><th>Obrigação</th><th>Órgão</th><th>Tipo</th><th>Vencimento</th><th>Dias restantes</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><strong>SIOPS — Quadrimestral</strong></td><td>MS</td><td>Saúde</td><td>07/05/2026</td><td><span style="font-weight:700;color:var(--red)">5 dias ⚠</span></td><td><span class="badge vermelho">URGENTE</span></td></tr>
+              <tr><td>RREO — 2º Bimestre</td><td>STN</td><td>LRF</td><td>30/05/2026</td><td><span style="font-weight:700;color:var(--amber)">28 dias</span></td><td><span class="badge amarelo">ATENÇÃO</span></td></tr>
+              <tr><td>DIRF 2026</td><td>Receita Federal</td><td>Tributário</td><td>30/06/2026</td><td><span style="color:var(--green)">59 dias</span></td><td><span class="badge verde">EM DIA</span></td></tr>
+              <tr><td>RGF — 1º Quadrimestre</td><td>STN</td><td>LRF</td><td>30/06/2026</td><td><span style="color:var(--green)">59 dias</span></td><td><span class="badge verde">EM DIA</span></td></tr>
+              <tr><td>SICONFI — Encerramento</td><td>STN</td><td>Contábil</td><td>31/07/2026</td><td><span style="color:var(--green)">90 dias</span></td><td><span class="badge verde">EM DIA</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ PRÉ-FECHAMENTO ══ -->
+      <div id="pg-pre-fechamento" class="page">
+        <div class="page-title">Pré-Fechamento — Mai/2026</div>
+        <div class="page-sub">Checklist de conferência antes do fechamento mensal</div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px">
+          <div class="card">
+            <div class="card-title">Progresso</div>
+            <div style="text-align:center;padding:12px 0">
+              <div style="font-size:40px;font-weight:700;color:var(--blue-d)" id="pf-pct">57%</div>
+              <div style="font-size:13px;color:var(--text3);margin-top:4px">4 de 7 itens</div>
+            </div>
+            <div class="progress-bar" style="height:10px"><div class="progress-fill" id="pf-bar" style="width:57%;background:var(--blue)"></div></div>
+            <div style="margin-top:16px">
+              <button class="btn btn-primary" style="width:100%" onclick="finalizarPF()">Finalizar pré-fechamento</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Itens do checklist</div>
+            <div id="pf-checklist">
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box checked">✓</div><div><div style="font-size:13px;font-weight:500">Balancete de verificação conferido</div><div style="font-size:11px;color:var(--text3)">Concluído em 28/04/2026 por Maria Silva</div></div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box checked">✓</div><div><div style="font-size:13px;font-weight:500">Extratos bancários conciliados</div><div style="font-size:11px;color:var(--text3)">4 divergências pendentes</div></div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box checked">✓</div><div><div style="font-size:13px;font-weight:500">Folha de pessoal importada</div><div style="font-size:11px;color:var(--text3)">2.140 registros processados</div></div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box checked">✓</div><div><div style="font-size:13px;font-weight:500">Empenhos do mês revisados</div><div style="font-size:11px;color:var(--text3)">843 empenhos validados</div></div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div style="font-size:13px;font-weight:500">Pendências críticas resolvidas</div><div style="font-size:11px;color:var(--text3)">2 pendências críticas em aberto</div></div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div style="font-size:13px;font-weight:500">Indicadores LRF verificados</div><div style="font-size:11px;color:var(--text3)">Aguardando conferência</div></div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div style="font-size:13px;font-weight:500">Relatórios internos gerados</div><div style="font-size:11px;color:var(--text3)">Aguardando fechamento</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ RELATÓRIOS ══ -->
+      <div id="pg-relatorios" class="page">
+        <div class="page-title">Relatórios</div>
+        <div class="page-sub">Geração de relatórios internos — apenas uso interno, sem valor oficial</div>
+        <div style="background:#FEF9C3;border:1px solid #EAB308;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#854D0E;margin-bottom:16px">⚠ Relatórios internos para análise. Para relatórios oficiais LRF, use o módulo RREO/RGF.</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+          <div class="card" style="cursor:pointer;transition:border .2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor=''">
+            <div style="font-size:28px;margin-bottom:8px">📊</div>
+            <div style="font-weight:600;margin-bottom:4px">Balancete Analítico</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Receitas e despesas detalhadas</div>
+            <button class="btn btn-primary btn-sm" onclick="gerarRelatorio('Balancete Analítico')">Gerar PDF</button>
+          </div>
+          <div class="card" style="cursor:pointer;transition:border .2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor=''">
+            <div style="font-size:28px;margin-bottom:8px">💰</div>
+            <div style="font-weight:600;margin-bottom:4px">Execução Orçamentária</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Dotações e realizações</div>
+            <button class="btn btn-primary btn-sm" onclick="gerarRelatorio('Execução Orçamentária')">Gerar PDF</button>
+          </div>
+          <div class="card" style="cursor:pointer;transition:border .2s" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor=''">
+            <div style="font-size:28px;margin-bottom:8px">📋</div>
+            <div style="font-weight:600;margin-bottom:4px">Demonstrativo de Pessoal</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Gastos e percentual RCL</div>
+            <button class="btn btn-primary btn-sm" onclick="gerarRelatorio('Demonstrativo de Pessoal')">Gerar PDF</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Relatórios gerados</div>
+          <table id="rel-table">
+            <thead><tr><th>Nome</th><th>Tipo</th><th>Competência</th><th>Gerado em</th><th>Por</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Balancete Analítico</td><td>Interno</td><td>Abr/2026</td><td>02/05/2026 09:12</td><td>Maria Silva</td><td><button class="btn btn-outline btn-sm">Baixar</button></td></tr>
+              <tr><td>Execução Orçamentária</td><td>Interno</td><td>Abr/2026</td><td>01/05/2026 16:44</td><td>João Costa</td><td><button class="btn btn-outline btn-sm">Baixar</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ AUDITORIA ══ -->
+      <div id="pg-auditoria" class="page">
+        <div class="page-title">Auditoria</div>
+        <div class="page-sub">Log imutável de ações — append-only, sem DELETE/UPDATE</div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Entidade</th><th>IP</th><th></th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:11px">02/05/2026 10:23:41</td><td>admin@maringa.pr.gov.br</td><td><span class="badge azul">LOGIN</span></td><td>User</td><td>192.168.1.45</td><td><button class="btn btn-outline btn-sm" onclick="expandAudit(this)">+</button></td></tr>
+              <tr><td style="font-size:11px">02/05/2026 09:48:12</td><td>maria.silva@maringa.pr.gov.br</td><td><span class="badge verde">DOCUMENTO_APROVADO</span></td><td>Documento</td><td>192.168.1.32</td><td><button class="btn btn-outline btn-sm" onclick="expandAudit(this)">+</button></td></tr>
+              <tr><td style="font-size:11px">02/05/2026 09:31:05</td><td>joao.costa@maringa.pr.gov.br</td><td><span class="badge amarelo">ALERTA_RECONHECIDO</span></td><td>Alerta</td><td>192.168.1.28</td><td><button class="btn btn-outline btn-sm" onclick="expandAudit(this)">+</button></td></tr>
+              <tr><td style="font-size:11px">01/05/2026 17:55:08</td><td>ana.pereira@maringa.pr.gov.br</td><td><span class="badge azul">IMPORTACAO_CONTABIL</span></td><td>ImportacaoContabil</td><td>192.168.1.41</td><td><button class="btn btn-outline btn-sm" onclick="expandAudit(this)">+</button></td></tr>
+              <tr><td style="font-size:11px">01/05/2026 16:22:33</td><td>gestor@maringa.pr.gov.br</td><td><span class="badge roxo">CONFIG_ATUALIZADA</span></td><td>SystemConfig</td><td>192.168.1.10</td><td><button class="btn btn-outline btn-sm" onclick="expandAudit(this)">+</button></td></tr>
+              <tr><td style="font-size:11px">30/04/2026 23:00:00</td><td>sistema</td><td><span class="badge cinza">ENGINE_ALERTAS</span></td><td>Alerta</td><td>interno</td><td><button class="btn btn-outline btn-sm" onclick="expandAudit(this)">+</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ DOCUMENTOS ══ -->
+      <div id="pg-documentos" class="page">
+        <div class="page-title">Documentos</div>
+        <div class="page-sub">Upload seguro com verificação SHA-256 e workflow de aprovação</div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px">
+          <div class="card">
+            <div class="card-title">Enviar documento</div>
+            <div style="margin-bottom:12px"><label class="form-label">Tipo</label>
+              <select><option>Balancete</option><option>Relatório Interno</option><option>Contrato</option><option>Nota Fiscal</option><option>Outros</option></select>
+            </div>
+            <div class="upload-zone" onclick="simDocUpload()" style="padding:24px">
+              <div class="upload-icon" style="font-size:24px">📎</div>
+              <div class="upload-text" style="font-size:13px">Selecionar arquivo</div>
+              <div class="upload-sub">PDF, DOCX até 50 MB</div>
+            </div>
+            <div id="doc-upload-ok" style="display:none;background:var(--green-l);border-radius:var(--radius);padding:10px;font-size:12px;color:var(--green);margin-top:10px">
+              ✓ Arquivo enviado — SHA-256 calculado e verificado
+            </div>
+          </div>
+          <div class="card" style="padding:0">
+            <div style="padding:16px 20px 8px"><div class="card-title" style="margin:0">Documentos recentes</div></div>
+            <table>
+              <thead><tr><th>Nome</th><th>Tipo</th><th>Status</th><th>Hash</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>balancete_abr2026.pdf</td><td>Balancete</td><td><span class="badge verde">APROVADO</span></td><td style="font-size:10px;font-family:monospace;color:var(--text3)">a3f8d2…</td><td><button class="btn btn-outline btn-sm">Baixar</button></td></tr>
+                <tr><td>contrato_fornecedor_0312.pdf</td><td>Contrato</td><td><span class="badge amarelo">AGUARDANDO</span></td><td style="font-size:10px;font-family:monospace;color:var(--text3)">b7c1e4…</td><td><button class="btn btn-green btn-sm" onclick="aprovarDoc(this)">Aprovar</button></td></tr>
+                <tr><td>relatorio_lrf_mai2026.pdf</td><td>Rel. Interno</td><td><span class="badge cinza">RASCUNHO</span></td><td style="font-size:10px;font-family:monospace;color:var(--text3)">c9d0f1…</td><td><button class="btn btn-outline btn-sm">Submeter</button></td></tr>
+                <tr><td>nota_fiscal_0891.pdf</td><td>Nota Fiscal</td><td><span class="badge verde">APROVADO</span></td><td style="font-size:10px;font-family:monospace;color:var(--text3)">e2a8b3…</td><td><button class="btn btn-outline btn-sm">Baixar</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ RREO/RGF ══ -->
+      <div id="pg-relatorios-lrf" class="page">
+        <div class="page-title">RREO / RGF</div>
+        <div class="page-sub">Relatórios de Gestão Fiscal — somente leitura MVP</div>
+        <div class="watermark-banner">⛔ SIMULAÇÃO INTERNA — SEM VALOR OFICIAL — NÃO PROTOCOLAR ⛔</div>
+        <div style="background:var(--red-l);border:1px solid var(--red);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:16px"><strong>Bloqueio B06 ativo:</strong> Envio externo ao TCE-PR/STN arquiteturalmente bloqueado (ForbiddenException).</div>
+        <div style="display:flex;gap:10px;margin-bottom:16px">
+          <button class="btn btn-primary" onclick="openModal('modal-rreo')">+ Novo RREO</button>
+          <button class="btn btn-outline">+ Novo RGF</button>
+        </div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead><tr><th>Tipo</th><th>Exercício</th><th>Período</th><th>Gastos Pessoal</th><th>RCL</th><th>Status</th><th>Marca d'água</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge azul">RREO</span></td><td>2026</td><td>1º Bimestre</td><td><span style="color:var(--amber);font-weight:600">48,9%</span></td><td>R$ 1,79B</td><td><span class="badge verde">CONFERIDO</span></td><td style="font-size:10px;color:var(--text3);font-style:italic">SIMULAÇÃO…</td></tr>
+              <tr><td><span class="badge roxo">RGF</span></td><td>2025</td><td>3º Quadrimestre</td><td><span style="color:var(--green);font-weight:600">47,2%</span></td><td>R$ 1,73B</td><td><span class="badge verde">APROVADO</span></td><td style="font-size:10px;color:var(--text3);font-style:italic">SIMULAÇÃO…</td></tr>
+              <tr><td><span class="badge azul">RREO</span></td><td>2025</td><td>6º Bimestre</td><td><span style="color:var(--green);font-weight:600">46,1%</span></td><td>R$ 1,68B</td><td><span class="badge verde">APROVADO</span></td><td style="font-size:10px;color:var(--text3);font-style:italic">SIMULAÇÃO…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ CALCULADORA ══ -->
+      <div id="pg-calculadora" class="page">
+        <div class="page-title">Calculadora LRF</div>
+        <div class="page-sub">Simulações fiscais estateless — sem persistência no banco de dados</div>
+        <div class="disclaimer">⚠ <strong>SIMULAÇÃO INTERNA:</strong> Resultados não substituem cálculos oficiais do SIAFIC ou demonstrativos assinados pelo responsável. Revisão obrigatória por contador responsável.</div>
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchCalcTab(this,'calc-pessoal')">Gastos com Pessoal</div>
+          <div class="tab" onclick="switchCalcTab(this,'calc-rcl')">RCL</div>
+          <div class="tab" onclick="switchCalcTab(this,'calc-resultado')">Resultado Primário</div>
+        </div>
+
+        <div id="calc-pessoal">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="card">
+              <div class="card-title">Dados de entrada</div>
+              <div style="margin-bottom:12px"><label class="form-label">Despesa Total com Pessoal (R$)</label><input type="number" id="c-pessoal" value="895000000" oninput="calcPessoal()"></div>
+              <div style="margin-bottom:12px"><label class="form-label">Receita Corrente Líquida — RCL (R$)</label><input type="number" id="c-rcl" value="1820000000" oninput="calcPessoal()"></div>
+              <div><label class="form-label">Competência</label><input type="text" id="c-comp" value="Mai/2026"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Resultado</div>
+              <div id="calc-result-pessoal">
+                <div class="lrf-result" id="r-pct" style="color:var(--amber)">49,18%</div>
+                <div id="r-faixa" class="badge amarelo" style="font-size:13px;padding:5px 14px">AVISO — zona de atenção</div>
+                <div style="margin:14px 0">
+                  <div class="lrf-bar-wrap" style="height:32px">
+                    <div style="position:absolute;top:0;left:0;width:47%;height:100%;background:#3B6D11;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">VERDE 47%</div>
+                    <div style="position:absolute;top:0;left:47%;width:4.3%;height:100%;background:#BA7517"></div>
+                    <div style="position:absolute;top:0;left:51.3%;width:2.7%;height:100%;background:#993C1D"></div>
+                    <div style="position:absolute;top:0;left:54%;width:46%;height:100%;background:#e5e7eb"></div>
+                    <div class="lrf-pointer" id="lrf-ptr" style="left:calc(49.18% - 1px)"></div>
+                  </div>
+                </div>
+                <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Margem restante: <strong id="r-margem">4,82 p.p.</strong></div>
+                <div style="font-size:11px;color:var(--text3)">Base legal: art. 19 e 20 da LC 101/2000 (LRF)</div>
+                <div class="stat-disclaimer">SIMULAÇÃO INTERNA — SEM VALOR OFICIAL</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="calc-rcl" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="card">
+              <div class="card-title">Dados de entrada</div>
+              <div style="margin-bottom:12px"><label class="form-label">Receita Corrente Bruta (R$)</label><input type="number" id="rcl-bruta" value="2100000000" oninput="calcRCL()"></div>
+              <div style="margin-bottom:12px"><label class="form-label">Transf. Constitucionais Recebidas (R$)</label><input type="number" id="rcl-transf" value="180000000" oninput="calcRCL()"></div>
+              <div><label class="form-label">Contribuição RPPS (R$)</label><input type="number" id="rcl-rpps" value="100000000" oninput="calcRCL()"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Resultado</div>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Total de Deduções</div>
+              <div style="font-size:20px;font-weight:700;color:var(--red);margin-bottom:12px" id="rcl-ded">R$ 280.000.000,00</div>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:4px">RCL Apurada</div>
+              <div style="font-size:28px;font-weight:700;color:var(--blue-d);margin-bottom:12px" id="rcl-result">R$ 1.820.000.000,00</div>
+              <div style="font-size:11px;color:var(--text3)">Base: art. 2º, §3º da LC 101/2000</div>
+              <div class="stat-disclaimer">SIMULAÇÃO INTERNA — SEM VALOR OFICIAL</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="calc-resultado" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="card">
+              <div class="card-title">Dados de entrada</div>
+              <div style="margin-bottom:12px"><label class="form-label">Total de Receitas (R$)</label><input type="number" id="res-rec" value="1820000000" oninput="calcResultado()"></div>
+              <div style="margin-bottom:12px"><label class="form-label">Total de Despesas (R$)</label><input type="number" id="res-desp" value="1778000000" oninput="calcResultado()"></div>
+              <div><label class="form-label">Resultado Financeiro (R$)</label><input type="number" id="res-fin" value="0" oninput="calcResultado()"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Resultado</div>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Resultado Nominal</div>
+              <div style="font-size:20px;font-weight:700;margin-bottom:12px" id="res-nominal" style="color:var(--green)">R$ 42.000.000,00</div>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Resultado Primário</div>
+              <div style="font-size:28px;font-weight:700;margin-bottom:8px" id="res-primario">R$ 42.000.000,00</div>
+              <div id="res-situacao" class="badge verde" style="font-size:14px;padding:5px 14px">SUPERÁVIT</div>
+              <div style="margin-top:12px;font-size:11px;color:var(--text3)">Base: LRF art. 4º, §1º</div>
+              <div class="stat-disclaimer">SIMULAÇÃO INTERNA — SEM VALOR OFICIAL</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ COPILOTO ══ -->
+      <div id="pg-copiloto" class="page">
+        <div class="page-title">Copiloto IA</div>
+        <div class="page-sub">Assistente de contabilidade pública com guardrails LRF — modo assistido</div>
+        <div style="background:var(--purple-l);border:1px solid var(--purple-200,#AFA9EC);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--purple);margin-bottom:16px">Copiloto em modo <strong>somente assistência</strong> — não aprova documentos, não executa ações financeiras, não protocola peças externas.</div>
+        <div class="chat-wrap">
+          <div class="chat-msgs" id="chat-msgs">
+            <div class="chat-msg bot">Olá! Sou o Copiloto IA do FINCON-IA. Posso ajudar com dúvidas sobre a LRF, análise de indicadores, interpretação de relatórios e procedimentos contábeis. Como posso auxiliar?</div>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chat-input" placeholder="Digite sua dúvida sobre LRF, contabilidade pública..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn btn-primary" onclick="sendChat()">Enviar</button>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="filter-btn" onclick="quickChat('Qual o percentual atual de gastos com pessoal?')">Gastos com pessoal</button>
+          <button class="filter-btn" onclick="quickChat('Quando vence o RREO do 2º bimestre?')">Prazo RREO</button>
+          <button class="filter-btn" onclick="quickChat('Como calcular a RCL?')">Como calcular RCL</button>
+          <button class="filter-btn" onclick="quickChat('Quais alertas estão ativos?')">Alertas ativos</button>
+        </div>
+      </div>
+
+      <!-- ══ CONFIGURAÇÕES ══ -->
+      <div id="pg-configuracoes" class="page">
+        <div class="page-title">Configurações</div>
+        <div class="page-sub">Administração do sistema — acesso restrito a ADMIN e GESTOR</div>
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchCfgTab(this,'cfg-sistema')">Sistema</div>
+          <div class="tab" onclick="switchCfgTab(this,'cfg-usuarios')">Usuários</div>
+          <div class="tab" onclick="switchCfgTab(this,'cfg-alertas')">Alertas</div>
+        </div>
+        <div id="cfg-sistema">
+          <div class="card">
+            <div class="card-title">Configurações do município</div>
+            <div class="form-grid" style="margin-bottom:16px">
+              <div class="form-group"><label class="form-label">Nome do município</label><input type="text" value="Maringá"></div>
+              <div class="form-group"><label class="form-label">UF</label><input type="text" value="PR"></div>
+              <div class="form-group"><label class="form-label">CNPJ</label><input type="text" value="76.282.656/0001-06"></div>
+              <div class="form-group"><label class="form-label">Código IBGE</label><input type="text" value="4115200"></div>
+              <div class="form-group"><label class="form-label">Exercício atual</label><input type="text" value="2026"></div>
+              <div class="form-group"><label class="form-label">Modelo Copiloto</label><select><option>gpt-4o-mini</option><option>claude-haiku</option><option>gpt-4o</option></select></div>
+            </div>
+            <div class="card-title">Limites LRF — Gastos com Pessoal</div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Limite aviso (%)</label><input type="number" value="47.00" step="0.1" min="0" max="100"></div>
+              <div class="form-group"><label class="form-label">Limite atenção (%) — 95% do máx.</label><input type="number" value="51.30" step="0.1"></div>
+              <div class="form-group"><label class="form-label">Limite máximo (%) — art. 20 LRF</label><input type="number" value="54.00" step="0.1"></div>
+            </div>
+            <div style="margin-top:16px"><button class="btn btn-primary">Salvar configurações</button></div>
+          </div>
+        </div>
+        <div id="cfg-usuarios" style="display:none">
+          <div class="card" style="padding:0">
+            <div style="padding:16px 20px 8px;display:flex;justify-content:space-between;align-items:center">
+              <div class="card-title" style="margin:0">Usuários do sistema</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modal-user')">+ Novo usuário</button>
+            </div>
+            <table>
+              <thead><tr><th>Nome</th><th>E-mail</th><th>Perfis</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Dr. Admin</td><td>admin@maringa.pr.gov.br</td><td><span class="badge vermelho">ADMIN</span></td><td><span class="badge verde">Ativo</span></td><td><button class="btn btn-outline btn-sm">Editar</button></td></tr>
+                <tr><td>Gestor Fazenda</td><td>gestor@maringa.pr.gov.br</td><td><span class="badge azul">GESTOR</span></td><td><span class="badge verde">Ativo</span></td><td><button class="btn btn-outline btn-sm">Editar</button></td></tr>
+                <tr><td>Maria Silva</td><td>maria.silva@maringa.pr.gov.br</td><td><span class="badge roxo">CONTADOR</span></td><td><span class="badge verde">Ativo</span></td><td><button class="btn btn-outline btn-sm">Editar</button></td></tr>
+                <tr><td>João Costa</td><td>joao.costa@maringa.pr.gov.br</td><td><span class="badge roxo">OPERADOR</span></td><td><span class="badge verde">Ativo</span></td><td><button class="btn btn-outline btn-sm">Editar</button></td></tr>
+                <tr><td>Ana Pereira</td><td>ana.pereira@maringa.pr.gov.br</td><td><span class="badge cinza">AUDITOR</span></td><td><span class="badge verde">Ativo</span></td><td><button class="btn btn-outline btn-sm">Editar</button></td></tr>
+                <tr><td>Visualizador Câmara</td><td>visualizador@maringa.pr.gov.br</td><td><span class="badge cinza">VISUALIZADOR</span></td><td><span class="badge cinza">Inativo</span></td><td><button class="btn btn-outline btn-sm">Ativar</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="cfg-alertas" style="display:none">
+          <div class="card">
+            <div class="card-title">Configuração de alertas</div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Dias antecedência — 1º aviso</label><input type="number" value="10"></div>
+              <div class="form-group"><label class="form-label">Dias antecedência — 2º aviso</label><input type="number" value="5"></div>
+              <div class="form-group"><label class="form-label">Dias antecedência — 3º aviso</label><input type="number" value="1"></div>
+              <div class="form-group"><label class="form-label">E-mail padrão para notificações</label><input type="email" value="fazenda@maringa.pr.gov.br"></div>
+            </div>
+            <div style="margin-top:14px;display:flex;align-items:center;gap:10px">
+              <input type="checkbox" id="email-ativo" style="width:auto">
+              <label for="email-ativo" style="font-size:13px;cursor:pointer">Ativar notificações por e-mail</label>
+            </div>
+            <div style="margin-top:16px"><button class="btn btn-primary">Salvar alertas</button></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /page-wrapper -->
+</div><!-- /main-app -->
+
+<!-- ═══ MODAIS ═══ -->
+<div class="modal-overlay" id="modal-rreo">
+  <div class="modal">
+    <div class="modal-title">Novo relatório RREO</div>
+    <div class="watermark-banner" style="font-size:11px">SIMULAÇÃO INTERNA — NÃO PROTOCOLAR</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Tipo</label><select><option>RREO</option><option>RGF</option></select></div>
+      <div class="form-group"><label class="form-label">Período</label><select><option>1º Bimestre</option><option>2º Bimestre</option><option>3º Bimestre</option></select></div>
+      <div class="form-group"><label class="form-label">Exercício</label><input type="text" value="2026"></div>
+      <div class="form-group"><label class="form-label">RCL Apurada (R$)</label><input type="number" value="1820000000"></div>
+      <div class="form-group"><label class="form-label">Gastos Pessoal Total (R$)</label><input type="number" value="895000000"></div>
+      <div class="form-group"><label class="form-label">Resultado Primário (R$)</label><input type="number" value="42000000"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-rreo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-rreo');showToast('RREO criado como rascunho — SIMULAÇÃO INTERNA')">Salvar rascunho</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-user">
+  <div class="modal">
+    <div class="modal-title">Novo usuário</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Nome completo</label><input type="text" placeholder="Nome Sobrenome"></div>
+      <div class="form-group"><label class="form-label">E-mail</label><input type="email" placeholder="email@maringa.pr.gov.br"></div>
+      <div class="form-group"><label class="form-label">Senha temporária</label><input type="password" placeholder="Mínimo 8 caracteres"></div>
+      <div class="form-group"><label class="form-label">Perfil</label>
+        <select><option>VISUALIZADOR</option><option>CONTADOR</option><option>OPERADOR</option><option>GESTOR</option><option>AUDITOR</option><option>ADMIN</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-user');showToast('Usuário criado com sucesso')">Criar usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none"></div>
+
+<script>
+const USERS = {
+  'admin@maringa.pr.gov.br':{'password':'Admin@2026!','name':'Dr. Admin','role':'ADMIN'},
+  'gestor@maringa.pr.gov.br':{'password':'Gestor@2026!','name':'Gestor Fazenda','role':'GESTOR'},
+  'contador@maringa.pr.gov.br':{'password':'Contador@2026!','name':'Maria Silva','role':'CONTADOR'},
+};
+
+const pageNames = {
+  'dashboard':'Dashboard','competencias':'Competências','alertas':'Alertas',
+  'importacao':'Importação','conciliacao':'Conciliação Bancária','pendencias':'Pendências',
+  'obrigacoes':'Obrigações Legais','pre-fechamento':'Pré-Fechamento',
+  'relatorios':'Relatórios','auditoria':'Auditoria','documentos':'Documentos',
+  'relatorios-lrf':'RREO / RGF','calculadora':'Calculadora LRF',
+  'copiloto':'Copiloto IA','configuracoes':'Configurações'
+};
+
+function doLogin(){
+  const e=document.getElementById('li-email').value.trim();
+  const p=document.getElementById('li-pass').value;
+  const u=USERS[e];
+  if(u && u.password===p){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('main-app').style.display='block';
+    document.getElementById('sb-name').textContent=u.name;
+    document.getElementById('sb-role').textContent=u.role+' — Maringá/PR';
+    document.getElementById('login-error').style.display='none';
+    initBars();
+    calcPessoal();calcRCL();calcResultado();
+  } else {
+    document.getElementById('login-error').style.display='block';
+  }
+}
+document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+function doLogout(){
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+function goto(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  const pg=document.getElementById('pg-'+id);
+  if(pg) pg.classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.getElementById('hdr-title').textContent=pageNames[id]||id;
+}
+
+function filterAlerts(btn,filter){
+  document.querySelectorAll('.filter-row .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const rows=document.querySelectorAll('#alerts-table tbody tr');
+  rows.forEach(r=>{
+    const status=r.dataset.status;const prio=r.dataset.prio;
+    let show=true;
+    if(filter==='ATIVO') show=status==='ATIVO';
+    else if(filter==='RECONHECIDO') show=status==='RECONHECIDO';
+    else if(filter==='CRÍTICO') show=prio==='CRÍTICO';
+    r.style.display=show?'':'none';
+  });
+}
+
+function reconhecerAlerta(btn){
+  const row=btn.closest('tr');
+  row.dataset.status='RECONHECIDO';
+  row.cells[3].innerHTML='<span class="badge cinza">RECONHECIDO</span>';
+  btn.replaceWith(document.createTextNode('Reconhecido'));
+  const cnt=document.getElementById('sb-alert-count');
+  let n=parseInt(cnt.textContent)-1;
+  cnt.textContent=n;
+  if(n===0) cnt.style.display='none';
+  showToast('Alerta reconhecido e registrado no audit log');
+}
+
+function initBars(){
+  const heights=[94,91,97,95,100,98];
+  document.querySelectorAll('[data-h]').forEach((el,i)=>{
+    el.style.height=heights[i]+'px';
+    el.style.borderRadius='3px 3px 0 0';
+  });
+}
+
+function calcPessoal(){
+  const pessoal=parseFloat(document.getElementById('c-pessoal').value)||0;
+  const rcl=parseFloat(document.getElementById('c-rcl').value)||1;
+  const pct=(pessoal/rcl)*100;
+  const margem=54-pct;
+  document.getElementById('r-pct').textContent=pct.toFixed(2).replace('.',',')+'%';
+  document.getElementById('r-margem').textContent=margem.toFixed(2).replace('.',',')+ ' p.p.';
+  const ptr=document.getElementById('lrf-ptr');
+  if(ptr) ptr.style.left='calc('+Math.min(pct,100)+'% - 1px)';
+  const faixa=document.getElementById('r-faixa');
+  const pctEl=document.getElementById('r-pct');
+  if(pct>=54){
+    faixa.className='badge vermelho';faixa.textContent='VERMELHO — limite ultrapassado';
+    pctEl.style.color='var(--red)';
+  } else if(pct>=51.3){
+    faixa.className='badge laranja';faixa.textContent='LARANJA — zona de atenção';
+    pctEl.style.color='var(--orange)';
+  } else if(pct>=47){
+    faixa.className='badge amarelo';faixa.textContent='AMARELO — zona de aviso';
+    pctEl.style.color='var(--amber)';
+  } else {
+    faixa.className='badge verde';faixa.textContent='VERDE — dentro do limite';
+    pctEl.style.color='var(--green)';
+  }
+}
+
+function fmtBRL(v){return 'R$ '+Math.round(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function calcRCL(){
+  const bruta=parseFloat(document.getElementById('rcl-bruta').value)||0;
+  const transf=parseFloat(document.getElementById('rcl-transf').value)||0;
+  const rpps=parseFloat(document.getElementById('rcl-rpps').value)||0;
+  const ded=transf+rpps;const rcl=bruta-ded;
+  document.getElementById('rcl-ded').textContent=fmtBRL(ded);
+  document.getElementById('rcl-result').textContent=fmtBRL(rcl);
+}
+
+function calcResultado(){
+  const rec=parseFloat(document.getElementById('res-rec').value)||0;
+  const desp=parseFloat(document.getElementById('res-desp').value)||0;
+  const fin=parseFloat(document.getElementById('res-fin').value)||0;
+  const nominal=rec-desp;const primario=nominal-fin;
+  const nomEl=document.getElementById('res-nominal');
+  const primEl=document.getElementById('res-primario');
+  const sitEl=document.getElementById('res-situacao');
+  nomEl.textContent=fmtBRL(nominal);
+  nomEl.style.color=nominal>=0?'var(--green)':'var(--red)';
+  primEl.textContent=fmtBRL(primario);
+  primEl.style.color=primario>=0?'var(--blue-d)':'var(--red)';
+  sitEl.className='badge '+(primario>=0?'verde':'vermelho');
+  sitEl.textContent=primario>=0?'SUPERÁVIT':'DÉFICIT';
+}
+
+function switchCalcTab(tab,id){
+  document.querySelectorAll('#pg-calculadora .tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  ['calc-pessoal','calc-rcl','calc-resultado'].forEach(t=>{
+    document.getElementById(t).style.display=t===id?'block':'none';
+  });
+}
+
+function switchCfgTab(tab,id){
+  document.querySelectorAll('#pg-configuracoes .tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  ['cfg-sistema','cfg-usuarios','cfg-alertas'].forEach(t=>{
+    document.getElementById(t).style.display=t===id?'block':'none';
+  });
+}
+
+const chatBots={
+  'pessoal':'O percentual atual de gastos com pessoal de Maringá é 49,18% da RCL (mai/2026). Está na zona de AVISO (acima de 47%). O limite legal é 54% — restam 4,82 p.p. de margem. Recomendo atenção redobrada nos próximos meses.',
+  'rreo':'O RREO do 2º bimestre de 2026 vence em 30/05/2026. Restam 28 dias. O prazo é fixado pelo art. 52 da LRF. Recomendo iniciar a elaboração com pelo menos 15 dias de antecedência.',
+  'rcl':'A RCL é apurada conforme art. 2º, §3º da LRF: parte da receita corrente bruta e deduz as transferências constitucionais recebidas e as contribuições dos servidores ao RPPS. Use a aba RCL da Calculadora para simular.',
+  'alertas':'Há 3 alertas ativos: (1) Gastos pessoal 49,2% — AVISO; (2) SIOPS vence em 5 dias; (3) Pendência crítica do balancete abr/2026. Acesse o módulo Alertas para reconhecer e registrar providências.'
+};
+const defaultBot='Analisei sua pergunta com base nos dados do sistema. Para questões específicas de LRF, recomendo verificar os indicadores na Calculadora LRF e o painel de Alertas. Posso aprofundar algum ponto?';
+
+function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const q=inp.value.trim();if(!q)return;
+  appendChat(q,'user');inp.value='';
+  setTimeout(()=>{
+    let r=defaultBot;
+    const ql=q.toLowerCase();
+    if(ql.includes('pessoal'))r=chatBots['pessoal'];
+    else if(ql.includes('rreo')||ql.includes('bimestre')||ql.includes('prazo'))r=chatBots['rreo'];
+    else if(ql.includes('rcl')||ql.includes('receita'))r=chatBots['rcl'];
+    else if(ql.includes('alerta'))r=chatBots['alertas'];
+    appendChat(r,'bot');
+  },600);
+}
+
+function quickChat(q){
+  document.getElementById('chat-input').value=q;sendChat();
+}
+
+function appendChat(msg,type){
+  const c=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  d.className='chat-msg '+type;d.textContent=msg;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+let pfChecked=4;
+function toggleCheck(item){
+  const box=item.querySelector('.check-box');
+  const was=box.classList.contains('checked');
+  if(was){box.classList.remove('checked');box.textContent='';pfChecked--;}
+  else{box.classList.add('checked');box.textContent='✓';pfChecked++;}
+  const pct=Math.round((pfChecked/7)*100);
+  document.getElementById('pf-pct').textContent=pct+'%';
+  document.getElementById('pf-bar').style.width=pct+'%';
+  document.getElementById('pf-bar').style.background=pct===100?'var(--green)':'var(--blue)';
+}
+
+function finalizarPF(){
+  const pct=parseInt(document.getElementById('pf-pct').textContent);
+  if(pct<100){showToast('Conclua todos os itens antes de finalizar ('+pct+'% concluído)');}
+  else{showToast('Pré-fechamento Mai/2026 finalizado! Registrado no audit log.');}
+}
+
+let relRows=[];
+function gerarRelatorio(nome){
+  showToast('Gerando '+nome+'...');
+  setTimeout(()=>{
+    const tbody=document.querySelector('#rel-table tbody');
+    const tr=document.createElement('tr');
+    const now=new Date();
+    const d=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear();
+    const h=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    tr.innerHTML=`<td>${nome}</td><td>Interno</td><td>Mai/2026</td><td>${d} ${h}</td><td>Dr. Admin</td><td><button class="btn btn-outline btn-sm">Baixar</button></td>`;
+    tbody.insertBefore(tr,tbody.firstChild);
+    showToast(nome+' gerado com sucesso');
+  },800);
+}
+
+let uploadInterval;
+function simUpload(){
+  const prog=document.getElementById('upload-progress');
+  const bar=document.getElementById('upload-bar');
+  const status=document.getElementById('upload-status');
+  prog.style.display='block';
+  let pct=0;
+  const msgs=['Validando arquivo...','Calculando SHA-256...','Processando registros...','Importação concluída!'];
+  let step=0;
+  clearInterval(uploadInterval);
+  uploadInterval=setInterval(()=>{
+    pct=Math.min(pct+Math.random()*20,100);
+    bar.style.width=pct+'%';
+    if(pct>20&&step===0){status.textContent=msgs[1];step=1;}
+    if(pct>55&&step===1){status.textContent=msgs[2];step=2;}
+    if(pct>=100){
+      status.textContent=msgs[3];status.style.color='var(--green)';
+      clearInterval(uploadInterval);
+      showToast('Arquivo importado — 4.812 registros processados');
+    }
+  },200);
+}
+
+function simDocUpload(){
+  document.getElementById('doc-upload-ok').style.display='block';
+  showToast('Documento enviado — SHA-256 verificado e armazenado');
+}
+
+function aprovarDoc(btn){
+  const cell=btn.closest('td').previousElementSibling.previousElementSibling.previousElementSibling;
+  cell.innerHTML='<span class="badge verde">APROVADO</span>';
+  btn.remove();
+  showToast('Documento aprovado e registrado no audit log');
+}
+
+function expandAudit(btn){
+  const row=btn.closest('tr');
+  const next=row.nextElementSibling;
+  if(next&&next.classList.contains('audit-detail')){next.remove();btn.textContent='+';}
+  else{
+    const tr=document.createElement('tr');tr.className='audit-detail';
+    tr.innerHTML='<td colspan="6" style="background:#f9fafb;padding:12px 20px;font-size:12px;font-family:monospace;color:var(--text2)">{"id":"uuid-...","userId":"uuid-...","entityId":"uuid-...","details":{"antes":null,"depois":{"status":"ATIVO"},"ip":"192.168.1.45"},"createdAt":"'+new Date().toISOString()+'"}</td>';
+    row.parentNode.insertBefore(tr,row.nextSibling);btn.textContent='−';
+  }
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{t.style.opacity='0';},3000);
+}
+</script>
+</body>
+</html>

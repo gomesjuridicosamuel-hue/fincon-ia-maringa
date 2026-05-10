@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINCON-IA Maringá — Painel do Projeto v1.0.0</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-50:   #E6F1FB; --blue-200: #85B7EB; --blue-600: #185FA5; --blue-800: #0C447C; --blue-900: #042C53;
+    --teal-50:   #E1F5EE; --teal-200: #5DCAA5; --teal-600: #0F6E56; --teal-800: #085041;
+    --purple-50: #EEEDFE; --purple-200: #AFA9EC; --purple-600: #534AB7; --purple-800: #3C3489;
+    --amber-50:  #FAEEDA; --amber-100: #FAC775; --amber-600: #BA7517; --amber-800: #633806;
+    --green-50:  #EAF3DE; --green-200: #97C459; --green-600: #3B6D11; --green-800: #27500A;
+    --red-50:    #FCEBEB; --red-200:   #F09595; --red-600:   #A32D2D; --red-800:   #791F1F;
+    --gray-50:   #F1EFE8; --gray-100:  #D3D1C7; --gray-200:  #B4B2A9; --gray-600:  #5F5E5A; --gray-800:  #444441;
+    --coral-50:  #FAECE7; --coral-600: #993C1D; --coral-800: #712B13;
+    --text:    #1a1a1a;
+    --text-2:  #555550;
+    --text-3:  #888780;
+    --border:  rgba(0,0,0,0.10);
+    --border-2:rgba(0,0,0,0.18);
+    --bg:      #ffffff;
+    --bg-2:    #f6f5f0;
+    --bg-3:    #eeedea;
+    --radius:  8px;
+    --radius-lg: 12px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text:   #f0ede8; --text-2: #b0ada8; --text-3: #706e6a;
+      --border: rgba(255,255,255,0.10); --border-2: rgba(255,255,255,0.18);
+      --bg: #1c1b19; --bg-2: #252421; --bg-3: #2e2c29;
+      --blue-50: #0c2a45; --blue-800: #85B7EB;
+      --teal-50: #062e22; --teal-800: #5DCAA5;
+      --purple-50: #1e1a3d; --purple-800: #AFA9EC;
+      --amber-50: #2a1f08; --amber-800: #FAC775;
+      --green-50: #152209; --green-800: #97C459;
+      --red-50: #2a1010; --red-800: #F09595;
+      --gray-50: #252421; --gray-800: #D3D1C7;
+      --coral-50: #2a1208; --coral-800: #F0997B;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-2);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 32px 24px 64px;
+  }
+
+  .page { max-width: 960px; margin: 0 auto; }
+
+  /* ── Cabeçalho ─────────────────────────────────────────── */
+  .header {
+    background: var(--bg);
+    border: 0.5px solid var(--border-2);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .header-title { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+  .header-sub   { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+  .header-meta  { font-size: 11px; color: var(--text-3); margin-top: 8px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .badge {
+    display: inline-flex; align-items: center; font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px; white-space: nowrap;
+  }
+  .badge-green  { background: var(--green-50);  color: var(--green-800); }
+  .badge-blue   { background: var(--blue-50);   color: var(--blue-800); }
+  .badge-purple { background: var(--purple-50); color: var(--purple-800); }
+  .badge-amber  { background: var(--amber-50);  color: var(--amber-800); }
+
+  /* ── Métricas ──────────────────────────────────────────── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .metric {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 20px 16px;
+  }
+  .metric-value { font-size: 28px; font-weight: 600; color: var(--text); letter-spacing: -0.5px; }
+  .metric-label { font-size: 12px; color: var(--text-2); margin-bottom: 6px; font-weight: 500; }
+  .metric-sub   { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+  .metric-bar { height: 3px; border-radius: 2px; margin-top: 12px; }
+
+  /* ── Seções ────────────────────────────────────────────── */
+  .section { margin-bottom: 20px; }
+  .section-title {
+    font-size: 11px; font-weight: 600; color: var(--text-3);
+    letter-spacing: 0.07em; text-transform: uppercase;
+    margin-bottom: 12px; padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  /* ── Cards ─────────────────────────────────────────────── */
+  .card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+  }
+
+  /* ── Arquitetura ───────────────────────────────────────── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1.5fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .arch-arrow { text-align: center; font-size: 18px; color: var(--text-3); }
+  .arch-box {
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    border: 1px solid;
+  }
+  .arch-box-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; }
+  .arch-box-name  { font-size: 14px; font-weight: 600; }
+  .arch-box-sub   { font-size: 11px; margin-top: 3px; opacity: 0.8; }
+  .arch-connector { display: flex; align-items: center; justify-content: center; }
+  .arch-conn-line {
+    width: 2px; height: 24px; background: var(--border-2);
+    margin: 0 auto;
+  }
+  .arch-row2 { display: grid; grid-template-columns: 1fr 2fr 1.5fr; gap: 10px; }
+  .arch-center { grid-column: 2; }
+
+  /* ── Módulos ───────────────────────────────────────────── */
+  .modules-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .mod {
+    border-radius: var(--radius);
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 0.5px solid transparent;
+  }
+
+  /* ── Telas frontend ────────────────────────────────────── */
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .screen {
+    border-radius: var(--radius);
+    padding: 7px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--teal-50);
+    color: var(--teal-800);
+    border: 0.5px solid var(--teal-200);
+  }
+
+  /* ── Sprints ───────────────────────────────────────────── */
+  .sprints-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .sprint {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    position: relative;
+  }
+  .sprint::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--green-200);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  }
+  .sprint-num  { font-size: 10px; font-weight: 600; color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+  .sprint-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .sprint-desc { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+  .sprint-tasks {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .sprint-tag {
+    font-size: 10px; padding: 2px 7px; border-radius: 10px;
+    background: var(--green-50); color: var(--green-800); font-weight: 500;
+  }
+
+  /* ── Dois painéis lado a lado ──────────────────────────── */
+  .two-col { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); gap: 16px; margin-bottom: 20px; }
+
+  /* ── RBAC ─────────────────────────────────────────────── */
+  .rbac-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .rbac-table th { font-size: 10px; font-weight: 600; color: var(--text-3); padding: 6px 8px; border-bottom: 0.5px solid var(--border-2); text-align: center; letter-spacing: 0.04em; }
+  .rbac-table td { padding: 6px 8px; border-bottom: 0.5px solid var(--border); color: var(--text-2); text-align: center; }
+  .rbac-table td:first-child { text-align: left; font-weight: 500; color: var(--text); }
+  .rbac-table tr:last-child td { border-bottom: none; }
+  .ok  { color: var(--green-600); font-size: 13px; }
+  .no  { color: var(--gray-200);  font-size: 13px; }
+
+  /* ── Testes ────────────────────────────────────────────── */
+  .test-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .test-label { font-size: 12px; color: var(--text-2); min-width: 110px; }
+  .test-bar-wrap { flex: 1; background: var(--bg-3); border-radius: 4px; height: 8px; overflow: hidden; }
+  .test-bar { height: 100%; border-radius: 4px; }
+  .test-count { font-size: 11px; color: var(--text-3); min-width: 26px; text-align: right; }
+
+  /* ── Restrições ────────────────────────────────────────── */
+  .rest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .rest-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+  .rest-item:last-child { border-bottom: none; }
+  .rest-code { font-size: 10px; font-weight: 700; color: var(--red-600); min-width: 28px; padding-top: 1px; font-family: monospace; }
+  .rest-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+
+  /* ── Pipeline CI/CD ────────────────────────────────────── */
+  .pipeline {
+    display: flex; align-items: center; gap: 0;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .pipe-step {
+    flex: 1; padding: 14px 12px; text-align: center;
+    border-right: 0.5px solid var(--border);
+    position: relative;
+  }
+  .pipe-step:last-child { border-right: none; }
+  .pipe-step::after {
+    content: '→';
+    position: absolute; right: -10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-3); font-size: 14px;
+    z-index: 1;
+  }
+  .pipe-step:last-child::after { display: none; }
+  .pipe-icon { font-size: 18px; margin-bottom: 4px; }
+  .pipe-name { font-size: 11px; font-weight: 600; color: var(--text); }
+  .pipe-sub  { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+  .pipe-green { background: var(--green-50); }
+  .pipe-blue  { background: var(--blue-50); }
+
+  /* ── Comandos Makefile ─────────────────────────────────── */
+  .cmd-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+  .cmd {
+    background: var(--bg-3); border-radius: var(--radius);
+    padding: 10px 12px; font-size: 11px;
+  }
+  .cmd-name { font-family: monospace; font-size: 12px; font-weight: 700; color: var(--blue-600); margin-bottom: 3px; }
+  .cmd-desc { color: var(--text-2); }
+
+  /* ── Rodapé ────────────────────────────────────────────── */
+  .footer {
+    margin-top: 28px; padding-top: 16px;
+    border-top: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .footer-text { font-size: 11px; color: var(--text-3); }
+
+  @media print {
+    body { background: white; padding: 16px; }
+    .pipeline { break-inside: avoid; }
+    .two-col { break-inside: avoid; }
+  }
+  @media (max-width: 700px) {
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .modules-grid, .screens-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .sprints-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .cmd-grid { grid-template-columns: 1fr 1fr; }
+    .rest-grid { grid-template-columns: 1fr; }
+    .arch-grid, .arch-row2 { grid-template-columns: 1fr; }
+    .arch-arrow { display: none; }
+    .pipeline { flex-direction: column; }
+    .pipe-step { border-right: none; border-bottom: 0.5px solid var(--border); }
+    .pipe-step::after { display: none; }
+    .rbac-table { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Cabeçalho ────────────────────────────────────────── -->
+  <div class="header">
+    <div>
+      <div class="header-title">FINCON-IA Maringá</div>
+      <div class="header-sub">Sistema de Gestão Financeiro-Contábil Assistida por IA — Prefeitura de Maringá/PR</div>
+      <div class="header-meta">Desenvolvido para a Secretaria de Fazenda · OAB/PR 53.055 · Maio/2026</div>
+      <div class="badges" style="margin-top:10px;">
+        <span class="badge badge-green">22 / 22 tarefas concluídas</span>
+        <span class="badge badge-blue">v1.0.0 MVP</span>
+        <span class="badge badge-green">Entregue</span>
+        <span class="badge badge-purple">54 casos de teste</span>
+        <span class="badge badge-amber">13 restrições arquiteturais</span>
+      </div>
+    </div>
+    <div style="text-align:right; min-width:120px;">
+      <div style="font-size:11px; color:var(--text-3); margin-bottom:4px;">Status geral</div>
+      <div style="font-size:32px; font-weight:700; color:var(--green-600);">100%</div>
+      <div style="font-size:11px; color:var(--text-3);">sprints finalizados</div>
+    </div>
+  </div>
+
+  <!-- ── Métricas ──────────────────────────────────────────── -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">Arquivos TypeScript</div>
+      <div class="metric-value">134</div>
+      <div class="metric-sub">112 backend · 22 frontend</div>
+      <div class="metric-bar" style="background:var(--blue-200);"></div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Casos de teste</div>
+      <div class="metric-value">54</div>
+      <div class="metric-sub">Jest · Supertest · Playwright</div>
+      <div class="metric-bar" style="background:var(--green-200);"></div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Módulos NestJS</div>
+      <div class="metric-value">20</div>
+      <div class="metric-sub">+ 15 telas Next.js</div>
+      <div class="metric-bar" style="background:var(--purple-200);"></div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Documentação técnica</div>
+      <div class="metric-value">9</div>
+      <div class="metric-sub">docs Markdown + CLAUDE.md</div>
+      <div class="metric-bar" style="background:var(--amber-100);"></div>
+    </div>
+  </div>
+
+  <!-- ── Arquitetura ───────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Arquitetura do sistema</div>
+    <div class="card">
+      <div class="arch-grid">
+        <div class="arch-box" style="background:var(--purple-50); border-color:var(--purple-200); color:var(--purple-800);">
+          <div class="arch-box-label" style="color:var(--purple-600);">IA</div>
+          <div class="arch-box-name">Copiloto IA</div>
+          <div class="arch-box-sub">FastAPI · Python 3.12<br>LangChain · Guardrails</div>
+        </div>
+        <div class="arch-arrow">⇄</div>
+        <div class="arch-box" style="background:var(--blue-50); border-color:var(--blue-200); color:var(--blue-800); grid-column: span 1;">
+          <div class="arch-box-label" style="color:var(--blue-600);">API REST</div>
+          <div class="arch-box-name">Backend — NestJS 10</div>
+          <div class="arch-box-sub">JWT · RBAC · TypeORM · Winston · Swagger · Throttler</div>
+        </div>
+        <div class="arch-arrow">⇄</div>
+        <div class="arch-box" style="background:var(--amber-50); border-color:var(--amber-100); color:var(--amber-800);">
+          <div class="arch-box-label" style="color:var(--amber-600);">Persistência</div>
+          <div class="arch-box-name">PostgreSQL 16</div>
+          <div class="arch-box-sub">Redis 7 · Docker volumes<br>Migrations TypeORM</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:center; padding: 0 calc(33.3% + 10px);">
+        <div style="width:2px; height:20px; background:var(--border-2);"></div>
+      </div>
+      <div class="arch-row2">
+        <div></div>
+        <div class="arch-box" style="background:var(--teal-50); border-color:var(--teal-200); color:var(--teal-800);">
+          <div class="arch-box-label" style="color:var(--teal-600);">Interface</div>
+          <div class="arch-box-name">Frontend — Next.js 14</div>
+          <div class="arch-box-sub">App Router · Tailwind CSS · Zustand · Edge Middleware · Standalone Docker</div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Pipeline CI/CD ───────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Pipeline CI/CD — GitHub Actions</div>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-icon">✔</div>
+        <div class="pipe-name">Lint</div>
+        <div class="pipe-sub">ESLint + Prettier</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon">✔</div>
+        <div class="pipe-name">Type check</div>
+        <div class="pipe-sub">tsc --noEmit</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon">✔</div>
+        <div class="pipe-name">Unit tests</div>
+        <div class="pipe-sub">Jest · cobertura</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon">✔</div>
+        <div class="pipe-name">E2E tests</div>
+        <div class="pipe-sub">Supertest + PG/Redis</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon">✔</div>
+        <div class="pipe-name">Build</div>
+        <div class="pipe-sub">NestJS + Next.js</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-icon">✔</div>
+        <div class="pipe-name">Docker push</div>
+        <div class="pipe-sub">GHCR · multi-stage</div>
+      </div>
+      <div class="pipe-step" style="background:var(--green-50);">
+        <div class="pipe-icon">✔</div>
+        <div class="pipe-name">Deploy staging</div>
+        <div class="pipe-sub">SSH · health check</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Módulos backend ───────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Módulos backend — NestJS 10 (20 módulos)</div>
+    <div class="card">
+      <div class="modules-grid">
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Auth</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Users</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Context</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Dashboard</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Competências</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Importação Contábil</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Importação Bancária</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Conciliação</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Pendências</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Obrigações</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Pré-Fechamento</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Relatórios</div>
+        <div class="mod" style="background:var(--blue-50); color:var(--blue-800); border-color:var(--blue-200);">Audit</div>
+        <div class="mod" style="background:var(--purple-50); color:var(--purple-800); border-color:var(--purple-200);">Copiloto IA</div>
+        <div class="mod" style="background:var(--amber-50); color:var(--amber-800); border-color:var(--amber-100);">Alertas LRF</div>
+        <div class="mod" style="background:var(--amber-50); color:var(--amber-800); border-color:var(--amber-100);">Documentos</div>
+        <div class="mod" style="background:var(--amber-50); color:var(--amber-800); border-color:var(--amber-100);">Calculadora LRF</div>
+        <div class="mod" style="background:var(--amber-50); color:var(--amber-800); border-color:var(--amber-100);">RREO / RGF</div>
+        <div class="mod" style="background:var(--green-50); color:var(--green-800); border-color:var(--green-200);">Health</div>
+        <div class="mod" style="background:var(--green-50); color:var(--green-800); border-color:var(--green-200);">Configurações</div>
+      </div>
+      <div style="display:flex; gap:16px; margin-top:14px; flex-wrap:wrap;">
+        <span style="font-size:11px; color:var(--text-3); display:flex; align-items:center; gap:5px;"><span style="width:10px; height:10px; border-radius:2px; background:var(--blue-200); display:inline-block;"></span> Domínio contábil (13)</span>
+        <span style="font-size:11px; color:var(--text-3); display:flex; align-items:center; gap:5px;"><span style="width:10px; height:10px; border-radius:2px; background:var(--purple-200); display:inline-block;"></span> IA (1)</span>
+        <span style="font-size:11px; color:var(--text-3); display:flex; align-items:center; gap:5px;"><span style="width:10px; height:10px; border-radius:2px; background:var(--amber-100); display:inline-block;"></span> LRF / compliance (4)</span>
+        <span style="font-size:11px; color:var(--text-3); display:flex; align-items:center; gap:5px;"><span style="width:10px; height:10px; border-radius:2px; background:var(--green-200); display:inline-block;"></span> Infra / admin (2)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Telas frontend ────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Telas frontend — Next.js 14 App Router (15 telas)</div>
+    <div class="card">
+      <div class="screens-grid">
+        <div class="screen">Dashboard</div>
+        <div class="screen">Competências</div>
+        <div class="screen">Alertas</div>
+        <div class="screen">Importação</div>
+        <div class="screen">Conciliação</div>
+        <div class="screen">Pendências</div>
+        <div class="screen">Obrigações</div>
+        <div class="screen">Pré-Fechamento</div>
+        <div class="screen">Relatórios</div>
+        <div class="screen">Auditoria</div>
+        <div class="screen">Documentos</div>
+        <div class="screen">RREO / RGF</div>
+        <div class="screen">Calculadora LRF</div>
+        <div class="screen">Copiloto IA</div>
+        <div class="screen">Configurações</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Sprints ───────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Histórico de sprints (6 sprints · 22 tarefas)</div>
+    <div class="sprints-grid">
+      <div class="sprint">
+        <div class="sprint-num">Sprints P0 – P1 · Tarefas 1–2</div>
+        <div class="sprint-name">Infraestrutura e domínio contábil</div>
+        <div class="sprint-desc">Guards, RBAC, JWT, DTOs, interceptors. 13 módulos contábeis com entidades e services.</div>
+        <div class="sprint-tasks">
+          <span class="sprint-tag">NestJS 10</span>
+          <span class="sprint-tag">PostgreSQL</span>
+          <span class="sprint-tag">JWT</span>
+          <span class="sprint-tag">TypeORM</span>
+        </div>
+      </div>
+      <div class="sprint">
+        <div class="sprint-num">Sprints P2 – P4 · Tarefas 3–5</div>
+        <div class="sprint-name">Frontend + Copiloto IA + Documentação</div>
+        <div class="sprint-desc">15 telas Next.js com App Router. FastAPI com guardrails LRF. security.md, modules.md, CLAUDE.md.</div>
+        <div class="sprint-tasks">
+          <span class="sprint-tag">Next.js 14</span>
+          <span class="sprint-tag">FastAPI</span>
+          <span class="sprint-tag">Zustand</span>
+          <span class="sprint-tag">Tailwind</span>
+        </div>
+      </div>
+      <div class="sprint">
+        <div class="sprint-num">Sprint MuniFlow · Tarefas 6–10</div>
+        <div class="sprint-name">Análise e migração MuniFlow</div>
+        <div class="sprint-desc">6 documentos técnicos: inventário funcional, matriz de incorporação, plano de migração, riscos, backlog e testes.</div>
+        <div class="sprint-tasks">
+          <span class="sprint-tag">6 docs</span>
+          <span class="sprint-tag">análise</span>
+          <span class="sprint-tag">backlog</span>
+        </div>
+      </div>
+      <div class="sprint">
+        <div class="sprint-num">Sprints P3 – P5 · Tarefas 11–19</div>
+        <div class="sprint-name">Alertas, documentos, RREO/RGF, configurações</div>
+        <div class="sprint-desc">Engine LRF + dedup SHA-256. Workflow aprovação documentos. RREO/RGF leitura. Migração DB com 5 tabelas e 7 ENUMs.</div>
+        <div class="sprint-tasks">
+          <span class="sprint-tag">Alertas LRF</span>
+          <span class="sprint-tag">SHA-256</span>
+          <span class="sprint-tag">RREO/RGF</span>
+          <span class="sprint-tag">Bloqueio B06</span>
+        </div>
+      </div>
+      <div class="sprint">
+        <div class="sprint-num">Sprint Operacionalização · Tarefa 20</div>
+        <div class="sprint-name">Docker, Swagger, seed, middleware</div>
+        <div class="sprint-desc">docker-compose.yml 178L. Dockerfiles multi-stage. Edge Middleware auth. Makefile 20 targets. Seed 6 usuários. app.module.ts 20 módulos.</div>
+        <div class="sprint-tasks">
+          <span class="sprint-tag">Docker</span>
+          <span class="sprint-tag">Swagger</span>
+          <span class="sprint-tag">Makefile</span>
+          <span class="sprint-tag">Seed</span>
+        </div>
+      </div>
+      <div class="sprint">
+        <div class="sprint-num">Sprint Final · Tarefas 21–22</div>
+        <div class="sprint-name">Testes + CI/CD + Qualidade</div>
+        <div class="sprint-desc">54 casos de teste em 7 arquivos. 3 pipelines GitHub Actions. ESLint, Prettier, Husky, Conventional Commits. README 342L, CHANGELOG v1.0.0.</div>
+        <div class="sprint-tasks">
+          <span class="sprint-tag">Jest</span>
+          <span class="sprint-tag">Playwright</span>
+          <span class="sprint-tag">GitHub Actions</span>
+          <span class="sprint-tag">Husky</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Testes + Restrições ───────────────────────────────── -->
+  <div class="two-col">
+
+    <!-- Testes -->
+    <div>
+      <div class="section-title">Suite de testes — 54 casos</div>
+      <div class="card" style="height:100%;">
+        <div style="margin-bottom:16px;">
+          <div class="test-row">
+            <span class="test-label">calculadora.service</span>
+            <div class="test-bar-wrap"><div class="test-bar" style="width:100%; background:var(--blue-200);"></div></div>
+            <span class="test-count">13</span>
+          </div>
+          <div class="test-row">
+            <span class="test-label">relatorios-lrf.service</span>
+            <div class="test-bar-wrap"><div class="test-bar" style="width:77%; background:var(--blue-200);"></div></div>
+            <span class="test-count">10</span>
+          </div>
+          <div class="test-row">
+            <span class="test-label">configuracoes.service</span>
+            <div class="test-bar-wrap"><div class="test-bar" style="width:54%; background:var(--blue-200);"></div></div>
+            <span class="test-count">7</span>
+          </div>
+          <div class="test-row">
+            <span class="test-label">documentos.service</span>
+            <div class="test-bar-wrap"><div class="test-bar" style="width:54%; background:var(--blue-200);"></div></div>
+            <span class="test-count">7</span>
+          </div>
+          <div class="test-row">
+            <span class="test-label">alertas.service</span>
+            <div class="test-bar-wrap"><div class="test-bar" style="width:38%; background:var(--blue-200);"></div></div>
+            <span class="test-count">5</span>
+          </div>
+          <div class="test-row">
+            <span class="test-label">app.e2e-spec</span>
+            <div class="test-bar-wrap"><div class="test-bar" style="width:62%; background:var(--teal-200);"></div></div>
+            <span class="test-count">8</span>
+          </div>
+          <div class="test-row">
+            <span class="test-label">auth-redirect (PW)</span>
+            <div class="test-bar-wrap"><div class="test-bar" style="width:31%; background:var(--purple-200);"></div></div>
+            <span class="test-count">4×15</span>
+          </div>
+        </div>
+        <div style="border-top:0.5px solid var(--border); padding-top:12px;">
+          <div style="font-size:11px; color:var(--text-3); margin-bottom:8px; font-weight:600;">Cobertura mínima configurada</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            <div style="font-size:11px; color:var(--text-2);">Branches</div><div style="font-size:11px; font-weight:600; color:var(--text);">60%</div>
+            <div style="font-size:11px; color:var(--text-2);">Functions</div><div style="font-size:11px; font-weight:600; color:var(--text);">70%</div>
+            <div style="font-size:11px; color:var(--text-2);">Lines</div><div style="font-size:11px; font-weight:600; color:var(--text);">70%</div>
+            <div style="font-size:11px; color:var(--text-2);">Statements</div><div style="font-size:11px; font-weight:600; color:var(--text);">70%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Restrições -->
+    <div>
+      <div class="section-title">Restrições arquiteturais hard-coded (13)</div>
+      <div class="card" style="height:100%;">
+        <div class="rest-grid">
+          <div>
+            <div class="rest-item"><span class="rest-code">B01</span><span class="rest-text">Sem write-back ao SIAFIC</span></div>
+            <div class="rest-item"><span class="rest-code">B02</span><span class="rest-text">Sem execução de pagamentos</span></div>
+            <div class="rest-item"><span class="rest-code">B03</span><span class="rest-text">Sem envio ao TCE/STN/Receita Federal</span></div>
+            <div class="rest-item"><span class="rest-code">B04</span><span class="rest-text">Sem aprovação automática por IA</span></div>
+            <div class="rest-item"><span class="rest-code">B05</span><span class="rest-text">Marca d'água obrigatória em RREO/RGF</span></div>
+            <div class="rest-item"><span class="rest-code">B06</span><span class="rest-text">enviarExterno() → ForbiddenException sempre</span></div>
+            <div class="rest-item" style="border-bottom:none;"><span class="rest-code">B07</span><span class="rest-text">SHA-256 verificado em todo download</span></div>
+          </div>
+          <div>
+            <div class="rest-item"><span class="rest-code">B08</span><span class="rest-text">Deduplicação de alertas por hash SHA-256</span></div>
+            <div class="rest-item"><span class="rest-code">B09</span><span class="rest-text">Guard: impede remoção do último ADMIN</span></div>
+            <div class="rest-item"><span class="rest-code">B10</span><span class="rest-text">Guard: impede auto-desativação de usuário</span></div>
+            <div class="rest-item"><span class="rest-code">B11</span><span class="rest-text">CalculadoraModule sem TypeOrmModule</span></div>
+            <div class="rest-item"><span class="rest-code">B12</span><span class="rest-text">Audit log sem endpoints DELETE/UPDATE</span></div>
+            <div class="rest-item" style="border-bottom:none;"><span class="rest-code">B13</span><span class="rest-text">synchronize: false permanente no TypeORM</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RBAC ─────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Perfis e permissões — RBAC (6 perfis)</div>
+    <div class="card">
+      <table class="rbac-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Módulo</th>
+            <th>VISUAL.</th>
+            <th>CONTA.</th>
+            <th>OPER.</th>
+            <th>GESTOR</th>
+            <th>AUDIT.</th>
+            <th>ADMIN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Dashboard</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+          <tr><td>Importação (upload)</td><td class="no">—</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="no">—</td><td class="ok">✓</td></tr>
+          <tr><td>Alertas (reconhecer)</td><td class="no">—</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="no">—</td><td class="ok">✓</td></tr>
+          <tr><td>Documentos (aprovar)</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="ok">✓</td><td class="no">—</td><td class="ok">✓</td></tr>
+          <tr><td>RREO/RGF (criar)</td><td class="no">—</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="no">—</td><td class="ok">✓</td></tr>
+          <tr><td>Calculadora LRF</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+          <tr><td>Auditoria</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+          <tr><td>Configurações sistema</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="ok">✓</td><td class="no">—</td><td class="ok">✓</td></tr>
+          <tr><td>Gestão de usuários</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="ok">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Makefile commands ─────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Comandos Makefile — operação diária</div>
+    <div class="cmd-grid">
+      <div class="cmd"><div class="cmd-name">make setup</div><div class="cmd-desc">Primeira execução</div></div>
+      <div class="cmd"><div class="cmd-name">make up</div><div class="cmd-desc">Sobe todos os containers</div></div>
+      <div class="cmd"><div class="cmd-name">make dev</div><div class="cmd-desc">Modo desenvolvimento</div></div>
+      <div class="cmd"><div class="cmd-name">make health</div><div class="cmd-desc">Verifica status dos serviços</div></div>
+      <div class="cmd"><div class="cmd-name">make migrate</div><div class="cmd-desc">Executa migrações DB</div></div>
+      <div class="cmd"><div class="cmd-name">make seed</div><div class="cmd-desc">Seed de desenvolvimento</div></div>
+      <div class="cmd"><div class="cmd-name">make test</div><div class="cmd-desc">Unit tests (Jest)</div></div>
+      <div class="cmd"><div class="cmd-name">make test-coverage</div><div class="cmd-desc">Tests + cobertura</div></div>
+      <div class="cmd"><div class="cmd-name">make logs-backend</div><div class="cmd-desc">Logs do NestJS</div></div>
+      <div class="cmd"><div class="cmd-name">make shell-db</div><div class="cmd-desc">Shell psql interativo</div></div>
+      <div class="cmd"><div class="cmd-name">make down</div><div class="cmd-desc">Para os containers</div></div>
+      <div class="cmd"><div class="cmd-name">make clean</div><div class="cmd-desc">Remove volumes e imagens</div></div>
+    </div>
+  </div>
+
+  <!-- ── Rodapé ────────────────────────────────────────────── -->
+  <div class="footer">
+    <div class="footer-text">FINCON-IA Maringá · MVP v1.0.0 · Prefeitura de Maringá/PR · Secretaria de Fazenda · OAB/PR 53.055</div>
+    <div class="footer-text">Maio/2026 · 22 tarefas · 6 sprints · 54 testes · 13 restrições arquiteturais</div>
+  </div>
+
+</div>
+</body>
+</html>
